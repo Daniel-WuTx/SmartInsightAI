@@ -4,3 +4,5 @@ __pycache__/
 venv/ 
 node_modules/ 
 *.rar 
+backend/db.sqlite3 
+backend/media/ 
