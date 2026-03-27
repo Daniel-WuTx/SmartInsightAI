@@ -1,33 +1,25 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from datasets.views import DatasetViewSet
 from analisis.views import ResultadoAnalisisViewSet
 
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
-
-# 🔥 ROUTER BIEN USADO
 router = DefaultRouter()
-router.register(r'datasets', DatasetViewSet)
-router.register(r'resultados', ResultadoAnalisisViewSet)
-
+router.register(r'datasets', DatasetViewSet, basename='dataset')
+router.register(r'resultados', ResultadoAnalisisViewSet, basename='resultado')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # 🔥 APIs AUTOMÁTICAS (CRUD)
+# ✅ DESPUÉS - upload va primero
+    path('api/datasets/', include('datasets.urls')),  # 👈 ARRIBA del router
+    path('api/', include('analisis.urls')),  # 👈 DESPUÉS del upload
     path('api/', include(router.urls)),
-
-    # 🔥 APIs PERSONALIZADAS
-    path('api/', include('analisis.urls')),
-
-    # 🔥 AUTH (CORREGIDO)
+    # Autenticación JWT
     path('api/login/', TokenObtainPairView.as_view()),
     path('api/refresh/', TokenRefreshView.as_view()),
-    
-    path('api/custom-datasets/', include('datasets.urls')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

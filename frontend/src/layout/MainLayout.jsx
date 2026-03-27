@@ -1,22 +1,16 @@
-export default function MainLayout({ children }) {
+import Sidebar from "../components/Sidebar"
+import Header from "../components/Header"
+
+export default function MainLayout({ children, datasetActivo }) {
   return (
-    <div className="flex min-h-screen">
-      
-      {/* Sidebar */}
-      <aside className="w-64 bg-black text-white p-5">
-        <h2 className="text-xl font-bold mb-6">SmartInsight</h2>
-        <ul className="space-y-3">
-          <li>Dashboard</li>
-          <li>Datasets</li>
-          <li>Insights IA</li>
-        </ul>
-      </aside>
-
-      {/* Content */}
-      <main className="flex-1 bg-gray-100 p-6">
-        {children}
-      </main>
-
+    <div className="flex min-h-screen bg-slate-900">
+      <Sidebar datasetActivo={datasetActivo} />
+      <div className="flex-1 flex flex-col overflow-auto">
+        <Header />
+        <main className="flex-1 overflow-auto">
+          {children}
+        </main>
+      </div>
     </div>
   )
 }

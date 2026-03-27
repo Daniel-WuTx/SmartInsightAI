@@ -68,35 +68,54 @@ def analizar_dataset(dataset):
             columna_categoria = col
 
     # ======================
-    # INSIGHTS DE VENTAS
-    # ======================
-    if columna_ventas:
+# INSIGHTS DE VENTAS
+# ======================
+    total_ventas = 0
+    total_ordenes = 0
+    crecimiento = 0
 
-        total_ventas = df[columna_ventas].sum()
+    if columna_ventas:
+        total_ventas = round(float(df[columna_ventas].sum()), 2)
         promedio_ventas = df[columna_ventas].mean()
 
         insights_lista.append(
             f"Ventas totales detectadas en '{columna_ventas}': {round(total_ventas, 2)}"
         )
-
         insights_lista.append(
             f"Promedio de ventas: {round(promedio_ventas, 2)}"
         )
+
+        # CRECIMIENTO — compara primera mitad vs segunda mitad
+        mitad = len(df) // 2
+        primera_mitad = df[columna_ventas].iloc[:mitad].sum()
+        segunda_mitad = df[columna_ventas].iloc[mitad:].sum()
+
+        if primera_mitad > 0:
+            crecimiento = round(((segunda_mitad - primera_mitad) / primera_mitad) * 100, 1)
 
         # OUTLIERS
         q1 = df[columna_ventas].quantile(0.25)
         q3 = df[columna_ventas].quantile(0.75)
         iqr = q3 - q1
-
         outliers = df[
             (df[columna_ventas] < (q1 - 1.5 * iqr)) |
             (df[columna_ventas] > (q3 + 1.5 * iqr))
         ]
-
         if len(outliers) > 0:
             insights_lista.append(
                 f"Se detectaron {len(outliers)} valores atípicos en las ventas"
             )
+
+    # ÓRDENES — buscar columna de órdenes
+    columna_ordenes = None
+    for col in df.columns:
+        nombre = col.lower()
+        if "order" in nombre or "orden" in nombre or "quantity" in nombre or "cantidad" in nombre:
+            columna_ordenes = col
+            break
+
+    if columna_ordenes:
+        total_ordenes = int(df[columna_ordenes].count())
 
     # ======================
     # ANÁLISIS TEMPORAL
@@ -217,6 +236,9 @@ def analizar_dataset(dataset):
         columnas_numericas=columnas_numericas,
         columnas_categoricas=columnas_categoricas,
         columnas_fecha=columnas_fecha,
+        total_ventas=total_ventas,
+        total_ordenes=total_ordenes,
+        crecimiento=crecimiento,
         insights=insights_texto,
         preview_datos=preview,
         datos_graficos=datos_graficos,

@@ -22,6 +22,9 @@ class DashboardSerializer(serializers.ModelSerializer):
             'columnas_numericas',
             'columnas_categoricas',
             'columnas_fecha',
+            'total_ventas',
+            'total_ordenes',
+            'crecimiento',
             'insights',
             'preview_datos',
             'datos_graficos'
